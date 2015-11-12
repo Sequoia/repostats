@@ -6,7 +6,7 @@ const join = require('path').join;
 
 //@see https://github.com/npm/download-counts
 const npmUriBase = 'https://api.npmjs.org/downloads/';
-const pkgs = ['express', 'loopback', 'hapi', 'restify', 'sails'];
+const pkgs = ['express', 'loopback', 'sails', 'restify',  'hapi'];
 const range = 'last-month';
 const npmUri = resolve(npmUriBase, join('point',range,'/'));
 
@@ -16,19 +16,23 @@ const err = console.error.bind(console);
 const makeNpmRangeUri = pkg => resolve(npmUri,pkg);
 const getStats = uri => request.get(uri).endAsync();
 const getBody = response => response.body;
-const sortByDownloads = ray => ray.sort((x,y) => y.downloads - x.downloads);
 
 //monthly download comparisons NPM
 const getDownloadCounts = pkgs => {
   return Promise.map(pkgs , makeNpmRangeUri)
     .map(getStats)
-    .map(getBody)
-    .then(sortByDownloads);
+    .map(getBody);
 };
 
-//getDownloadCounts(pkgs).then(log);
-  
-//send it to google sheets
+//turn downloadCount results into a row for gdocs
+const buildRow = pkgstats => {
+  return pkgstats.reduce((out, pkgstats) => {
+      out.start = pkgstats.start;   //redundant
+      out.end = pkgstats.end;       //redundant
+      out[pkgstats.package] = pkgstats.downloads;
+      return out;
+    }, {});
+};
 
 //@see https://www.npmjs.com/package/google-spreadsheet#service-account-recommended-method
 const credsPath = join(__dirname, '../../google-creds.json');              //CHANGE THIS AS NEEDED
@@ -59,20 +63,9 @@ const getFrameworksSheet = () => {
     .then(getinfo)
     .tap(logDocTitle)
     .then(getSheet(0));
-    //.then(getRows)
-    //.tap(logRowInfo);
 };
 
-Promise.join( getFrameworksSheet(), mockRowData(), addRow);
-
-function mockRowData(){
-  return {
-    start: 1000,
-    end: 1111,
-    express: 100,
-    loopback: 200,
-    sails: 33,
-    restify: 987248596,
-    hapi: 9280375
-  };
-}
+Promise.join(
+  getFrameworksSheet(),                   //get google sheet
+  getDownloadCounts(pkgs).then(buildRow), //get new NPM data & build row
+  addRow);                                //send it to google
