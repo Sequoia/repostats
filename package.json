@@ -4,7 +4,7 @@
   "description": "get repo stats stick them in a google sheet",
   "main": "dist/index.js",
   "scripts": {
-    "bbl-build": "babel index.js --out-file dist/index.js",
+    "bbl-build": "babel src --out-dir dist",
     "bbl-watch": "npm run bbl-build -- --watch",
     "build": "npm run bbl-build",
     "watch": "npm run bbl-watch",
@@ -28,6 +28,7 @@
     "babel-core": "^6.1.4",
     "bluebird": "^3.0.5",
     "google-spreadsheet": "^1.0.1",
+    "lodash": "^3.10.1",
     "moment": "^2.10.6",
     "superagent": "^1.4.0"
   }

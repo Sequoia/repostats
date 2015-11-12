@@ -29,20 +29,11 @@ module.exports = function(sheetid, creds){
   //this ends up getting used "globally" here :(
   const doc = Promise.promisifyAll(new GoogleSheets(sheetid));
   const getinfo = () => doc.getInfoAsync();
+  const sheets = doc.useServiceAccountAuthAsync(creds)
+                    .then(getinfo);
   //END SETUP
-
-  //TODO this is not efficient: it's running auth each time it requests a sheet
-  //need to untangle promises here
-  const getSheet = idx => {
-    console.log('getting sheet ' + idx);
-    return doc
-      .useServiceAccountAuthAsync(creds)
-      .then(getinfo)
-      .then(getSheetNum(idx));
-  };
-
   return {
-    getSheet,
+    getSheet : idx => sheets.then(getSheetNum(idx)),
     buildNpmRow,
     addRow
   };
