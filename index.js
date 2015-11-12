@@ -45,20 +45,34 @@ const logDocTitle = doc_info => log(doc_info.title + ' is loaded');
 const getSheet = (idx) => (allSheets) => Promise.promisifyAll(allSheets.worksheets[idx]);
 
 //single-sheet fns
+//@TODO promisify the individual rows (this sheets thing has a bit of a crazy API tbh :/)
 const getRows = sheet => sheet.getRowsAsync();
 
 //rows fns
 const logRowInfo = (rows) => log('rows:', rows.length);
-//const saveRow
+//shifting index here to match normal worksheet 
+const addRow = (sheet, rowData) => sheet.addRowAsync(rowData);
 
-const getFrameworkRows = () => {
+const getFrameworksSheet = () => {
   return doc
     .useServiceAccountAuthAsync(creds)
     .then(getinfo)
     .tap(logDocTitle)
-    .then(getSheet(0))
-    .then(getRows)
-    .tap(logRowInfo);
+    .then(getSheet(0));
+    //.then(getRows)
+    //.tap(logRowInfo);
 };
 
-getFrameworkRows();
+Promise.join( getFrameworksSheet(), mockRowData(), addRow);
+
+function mockRowData(){
+  return {
+    start: 1000,
+    end: 1111,
+    express: 100,
+    loopback: 200,
+    sails: 33,
+    restify: 987248596,
+    hapi: 9280375
+  };
+}
