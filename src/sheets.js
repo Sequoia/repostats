@@ -12,6 +12,17 @@ const buildNpmRow = pkgstats => {
     }, {});
 };
 
+const buildTopUsersRow = (daterange) => (stats) => {
+  return {
+    username : stats.author.login,
+    additions: stats.totals.a,
+    deletions: stats.totals.d,
+    changes:   stats.totals.c,
+    total:     stats.grandTotal,
+    daterange: daterange
+  };
+};
+
 //sheet-collection util fns
 const logDocTitle = doc_info => log(doc_info.title + ' is loaded');
 const getSheetNum = (idx) => (allSheets) => Promise.promisifyAll(allSheets.worksheets[idx]);
@@ -26,7 +37,6 @@ const addRow = (sheet, rowData) => sheet.addRowAsync(rowData);
 
 module.exports = function(sheetid, creds){
   //SETUP
-  //this ends up getting used "globally" here :(
   const doc = Promise.promisifyAll(new GoogleSheets(sheetid));
   const getinfo = () => doc.getInfoAsync();
   const sheets = doc.useServiceAccountAuthAsync(creds)
@@ -35,6 +45,7 @@ module.exports = function(sheetid, creds){
   return {
     getSheet : idx => sheets.then(getSheetNum(idx)),
     buildNpmRow,
+    buildTopUsersRow,
     addRow
   };
 };
