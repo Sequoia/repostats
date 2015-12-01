@@ -16,7 +16,7 @@ const repos = Promise.promisifyAll(gh.repos);
 const weeksSince = timestamp => ray => ray.w > timestamp;
 
 //returns sorted list of top X contributors
-function topUsers(startDate, repoInfo, topX = 10){
+function topUsers(startDate, repoInfo, topX){
   const startSeconds = (new Date(startDate)).getTime() / 1000;
   const trimWeeks = pr(filter, weeksSince(startSeconds));
 
@@ -30,7 +30,7 @@ function topUsers(startDate, repoInfo, topX = 10){
           c : acc.c + week.c
         };
       }, {a:0,c:0,d:0});
-      r.grandTotal = r.totals.a + r.totals.d + r.totals.c;
+      r.grandTotal = r.totals.a + r.totals.d;
       return r;
     })
     .then(pr(sortBy,(x)=>-x.grandTotal))

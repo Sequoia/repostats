@@ -30,19 +30,18 @@ function logDownloads(range){
   );
 }
 
-function logTopContributors(since, repoInfo){
+function logTopContributors(since, repoInfo, topX = 10){
   const daterange = [since,moment().format('MMMM d YYYY')].join(',');
   return Promise.join(
     doc.getSheet(1),              //get sheet
-    topUsers(since, repoInfo)     //get new repo data
+    topUsers(since, repoInfo, topX)     //get new repo data
       .map(doc.buildTopUsersRow(daterange)),   //build row
     function(sheet, rows){        //add each to google sheet
-      const addToSheet1 = doc.addRow.bind(null, sheet);
-      rows.map(addToSheet1);
+      Promise.mapSeries(rows, doc.addRow.bind(null, sheet));
     }
   );
 }
 
-logTopContributors('January 1 2015', {user:'nodejs', repo:'node'});
+logTopContributors('January 1 2015', {user:'nodejs', repo:'node'}, 20);
 
 //logDownloads(config.range || 'last-month');

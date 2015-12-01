@@ -17,7 +17,7 @@ const buildTopUsersRow = (daterange) => (stats) => {
     username : stats.author.login,
     additions: stats.totals.a,
     deletions: stats.totals.d,
-    changes:   stats.totals.c,
+    commits:   stats.totals.c,
     total:     stats.grandTotal,
     daterange: daterange
   };
