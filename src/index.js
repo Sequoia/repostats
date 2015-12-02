@@ -10,11 +10,11 @@ import sheets from './sheets.js';
 import moment from 'moment';
 import {getDownloadCounts} from './npmstuff.js';
 import {topUsers} from './ghstuff.js';
-const config = require('rc')('repostats');
 
 const log = console.log.bind(console);
 const err = console.error.bind(console);
 
+const config = require('rc')('repostats');
 //@see https://www.npmjs.com/package/google-spreadsheet#service-account-recommended-method
 const creds = require(config.creds);
 const doc = sheets(config.sheetId, creds);
@@ -42,6 +42,6 @@ function logTopContributors(since, repoInfo, topX = 10){
   );
 }
 
-logTopContributors('January 1 2015', {user:'nodejs', repo:'node'}, 20);
+logTopContributors('January 1 2014', {user:'nodejs', repo:'node'}, 20);
 
 //logDownloads(config.range || 'last-month');

@@ -33,10 +33,7 @@ function topUsers(startDate, repoInfo, topX){
       r.grandTotal = r.totals.a + r.totals.d;
       return r;
     })
-    .then(pr(sortBy,(x)=>-x.grandTotal))
+    .then(pr(sortBy,(x)=>-x.totals.c))
     .then(pr(take, topX))
     .map(pr(pick,['author','totals','grandTotal']));
 }
-
-//later:
-//1. orgs?
